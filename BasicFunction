@@ -1,0 +1,50 @@
+import requests
+import json
+
+def get_notable_musicians(city):
+    url = "https://en.wikipedia.org/w/api.php"
+    params = {
+        "action": "query",
+        "format": "json",
+        "list": "categorymembers",
+        "cmtitle": f"Category:Musicians from {city}",
+        "cmlimit": "max"
+    }
+    response = requests.get(url, params=params)
+    data = json.loads(response.text)
+    musician_pages = data["query"]["categorymembers"]
+    musician_titles = [page["title"] for page in musician_pages]
+
+    params = {
+        "action": "query",
+        "format": "json",
+        "list": "categorymembers",
+        "cmtitle": f"Category:Musical groups from {city}",
+        "cmlimit": "max"
+    }
+    response = requests.get(url, params=params)
+    data = json.loads(response.text)
+    group_pages = data["query"]["categorymembers"]
+    group_titles = [page["title"] for page in group_pages]
+
+    params = {
+        "action": "query",
+        "format": "json",
+        "list": "categorymembers",
+        "cmtitle": f"Category:Singers from {city}",
+        "cmlimit": "max"
+    }
+    response = requests.get(url, params=params)
+    data = json.loads(response.text)
+    singer_pages = data["query"]["categorymembers"]
+    singer_titles = [page["title"] for page in singer_pages]
+
+    notable_musicians = set(musician_titles + group_titles + singer_titles)
+    return list(notable_musicians)
+
+city = "Philadelphia"
+notable_musicians = get_notable_musicians(city)
+notable_musicians.sort()
+print(f"Notable musicians from {city}:")
+for musician in notable_musicians:
+    print(musician)
